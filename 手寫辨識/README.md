@@ -1,6 +1,7 @@
 # Handwritten Digit Recognition Project
 
 比較傳統機器學習（KNN）與神經網路（CNN）的手寫數字辨識專題架構。
+*需使用python 3.12版本操作
 
 ## 專案結構
 

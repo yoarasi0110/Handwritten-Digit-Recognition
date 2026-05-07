@@ -23,14 +23,13 @@ pip install numpy scikit-learn matplotlib joblib tensorflow
 python main.py --skip-cnn
 ```
 
-上面會一次跑兩個資料集：
+上面只會跑兩種資料集的knn：
 - knn-sklearn digits
 - knn-mnist
 
 若要同時跑四種模型（knn-sklearn, knn-mnist, cnn-sklearn, cnn-mnist）：
 
 ```bash
-pip install tensorflow
 python main.py
 ```
 

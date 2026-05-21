@@ -30,6 +30,7 @@ python main.py --skip-cnn
 若要同時跑四種模型（knn-sklearn, knn-mnist, cnn-sklearn, cnn-mnist）：
 
 ```bash
+pip install numpy scikit-learn matplotlib joblib tensorflow
 python main.py
 ```
 

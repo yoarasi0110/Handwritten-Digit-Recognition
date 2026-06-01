@@ -1,6 +1,6 @@
-"""Main pipeline for handwritten digit recognition project.
+"""手寫數字辨識主程式
 
-Compares KNN (traditional ML) and CNN (deep learning) on sklearn digits and MNIST datasets.
+比較 KNN(傳統機器學習)與 CNN(深度學習)在 sklearn digits 與 MNIST 資料集上的表現
 """
 
 from __future__ import annotations
@@ -16,20 +16,22 @@ from train_cnn import train_cnn
 from train_knn import train_knn
 from utils import ensure_dirs, write_accuracy_report
 
-
+#決定要載哪個資料集
 DATASET_LOADERS = {
     "digits": load_sklearn_digits,
     "mnist": load_mnist,
 }
 
-
+#對指定資料集執行訓練與評估流程，回傳結果文字列表，一次跑一個資料集
 def run_for_dataset(dataset: str, skip_cnn: bool = False) -> list[str]:
     x, y = DATASET_LOADERS[dataset](normalize=True)
+    #把資料分成訓練集和測試集，20%當測試集，並且保持類別分布一致
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42, stratify=y)
 
     lines = [f"=== Dataset: {dataset} ==="]
 
     # KNN pipeline
+    #把資料攤平ex: 8*8的圖變成64維的向量，然後用 KNN 訓練模型，接著評估模型表現，最後把模型存起來，還有把混淆矩陣畫出來存成圖片
     x_train_flat = flatten_for_ml(x_train)
     x_test_flat = flatten_for_ml(x_test)
     knn_result = train_knn(x_train_flat, y_train, n_neighbors=3)
@@ -45,8 +47,9 @@ def run_for_dataset(dataset: str, skip_cnn: bool = False) -> list[str]:
         "KNN classification report:",
         knn_eval.report,
     ]
-
+    # CNN pipeline
     if not skip_cnn:
+        #CNN 要保留圖片結構，所以不會攤平，而是整理成像(批次數,高,寬,通道數)ex.(100, 8, 8, 1)
         x_train_cnn = reshape_for_cnn(x_train)
         x_test_cnn = reshape_for_cnn(x_test)
         cnn_result = train_cnn(x_train_cnn, y_train, epochs=8)
@@ -66,9 +69,9 @@ def run_for_dataset(dataset: str, skip_cnn: bool = False) -> list[str]:
 
     return lines
 
-
+#整體流程控制，決定要跑哪個資料集，要不要跳過 CNN，最後把結果寫成報告
 def run_pipeline(skip_cnn: bool = False, dataset: str = "digits", run_all: bool = True) -> None:
-    ensure_dirs()
+    ensure_dirs() #確保模型和結果的資料夾存在
     datasets = ["digits", "mnist"] if run_all else [dataset]
 
     report_lines = ["=== Digit Classification Comparison ==="]
@@ -79,7 +82,7 @@ def run_pipeline(skip_cnn: bool = False, dataset: str = "digits", run_all: bool 
     write_accuracy_report(report)
     print(report)
 
-
+#讀命令列參數，決定要跳過 CNN、要跑哪個資料集、要不要只跑一個資料集
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Digit recognition comparison project")
     parser.add_argument("--skip-cnn", action="store_true", help="Run only traditional ML (KNN) pipeline")
@@ -87,7 +90,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--single-dataset", action="store_true", help="Run only one dataset instead of both datasets")
     return parser.parse_args()
 
-
+#主程式入口，解析命令列參數，然後執行整體流程
 if __name__ == "__main__":
     args = parse_args()
     run_pipeline(skip_cnn=args.skip_cnn, dataset=args.dataset, run_all=not args.single_dataset)

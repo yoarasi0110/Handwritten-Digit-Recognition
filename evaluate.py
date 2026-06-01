@@ -1,4 +1,4 @@
-"""Evaluation utilities for classification models."""
+"""分類模型的評估工具"""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ class EvalResult:
     confusion: np.ndarray
     infer_seconds: float
 
-
+#拿一個已經訓練好的模型，去測試資料上做預測，然後算出評估結果
 def evaluate_classifier(model: Any, x_test: np.ndarray, y_test: np.ndarray) -> EvalResult:
     start = perf_counter()
     y_pred = model.predict(x_test)
@@ -31,7 +31,7 @@ def evaluate_classifier(model: Any, x_test: np.ndarray, y_test: np.ndarray) -> E
     cm = confusion_matrix(y_test, y_pred)
     return EvalResult(acc, report, cm, infer)
 
-
+#把混淆矩陣畫成圖，然後存成圖片檔
 def save_confusion_matrix(cm: np.ndarray, output_path: str) -> None:
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -45,7 +45,7 @@ def save_confusion_matrix(cm: np.ndarray, output_path: str) -> None:
     plt.savefig(output)
     plt.close()
 
-
+#把 CNN 訓練過程中的準確率曲線畫出來並存檔
 def save_training_curve(history: Any, output_path: str) -> None:
     hist = history.history
     output = Path(output_path)
